@@ -1,0 +1,13 @@
+{"timestamp": "2024-01-15T03:30:00Z", "level": "INFO", "event": "login_attempt", "user": "admin", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:30:02Z", "level": "INFO", "event": "login_attempt", "user": "admin", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:30:04Z", "level": "INFO", "event": "login_attempt", "user": "admin", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:30:06Z", "level": "INFO", "event": "login_attempt", "user": "root", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:30:08Z", "level": "INFO", "event": "login_attempt", "user": "administrator", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:30:10Z", "level": "INFO", "event": "login_attempt", "user": "admin", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:30:12Z", "level": "WARN", "event": "rate_limit", "user": "admin", "ip": "192.168.1.200", "status": "blocked", "message": "Too many login attempts"}
+{"timestamp": "2024-01-15T03:30:14Z", "level": "INFO", "event": "login_attempt", "user": "test", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:30:16Z", "level": "INFO", "event": "login_attempt", "user": "guest", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:30:18Z", "level": "INFO", "event": "login_attempt", "user": "admin", "ip": "192.168.1.200", "status": "failed", "message": "Invalid credentials"}
+{"timestamp": "2024-01-15T03:31:00Z", "level": "INFO", "event": "login_success", "user": "john.doe", "ip": "10.0.0.50", "status": "success", "message": "User logged in"}
+{"timestamp": "2024-01-15T03:32:00Z", "level": "INFO", "event": "api_request", "user": "john.doe", "ip": "10.0.0.50", "resource": "/api/users", "status": "success"}
+{"timestamp": "2024-01-15T03:33:00Z", "level": "INFO", "event": "api_request", "user": "john.doe", "ip": "10.0.0.50", "resource": "/api/reports", "status": "success"}

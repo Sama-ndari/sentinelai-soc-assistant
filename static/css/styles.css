@@ -1,0 +1,337 @@
+/* SOC Assistant - Custom Styles */
+
+/* Base styles */
+:root {
+    --color-primary: #059669;
+    --color-primary-dark: #047857;
+    --color-danger: #dc2626;
+    --color-warning: #f59e0b;
+    --color-success: #10b981;
+    --color-slate: #1e293b;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+/* Severity badge colors */
+.severity-critical {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: #fecaca;
+}
+
+.severity-high {
+    background-color: #ffedd5;
+    color: #9a3412;
+    border-color: #fed7aa;
+}
+
+.severity-medium {
+    background-color: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+}
+
+.severity-low {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-color: #a7f3d0;
+}
+
+/* Card styles */
+.card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+/* Log textarea styling */
+#logContent {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Segoe UI Mono', Consolas, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 200px;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    transition: background-color 0.15s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-dark);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.15s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e8f0;
+}
+
+/* Loading spinner */
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* MITRE ATT&CK badges */
+.mitre-badge {
+    display: inline-block;
+    background-color: #ede9fe;
+    color: #6b21a8;
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.mitre-badge:hover {
+    background-color: #ddd6fe;
+}
+
+/* Evidence summary grid */
+.evidence-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .evidence-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Recommendation list */
+.recommendation-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.recommendation-item svg {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+}
+
+/* Incident list item */
+.incident-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.incident-item:hover {
+    background-color: #f8fafc;
+}
+
+/* Header styles */
+.app-header {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+}
+
+/* Form styles */
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.form-input {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Status indicator */
+.status-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.status-dot.online {
+    background-color: #10b981;
+    animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Alert panel borders */
+.alert-panel {
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border-width: 2px;
+    border-style: solid;
+}
+
+.alert-panel.critical {
+    background-color: #fef2f2;
+    border-color: #fecaca;
+}
+
+.alert-panel.high {
+    background-color: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.alert-panel.medium {
+    background-color: #fffbeb;
+    border-color: #fde68a;
+}
+
+.alert-panel.low {
+    background-color: #ecfdf5;
+    border-color: #a7f3d0;
+}
+
+/* Scrollbar styling */
+#logContent::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#logContent::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+#logContent::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+#logContent::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Fade in animation */
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Code/monospace text */
+.mono {
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace;
+}
+
+/* Tooltip styles */
+.tooltip {
+    position: relative;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e293b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.tooltip:hover::after {
+    opacity: 1;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280;
+}
+
+.empty-state svg {
+    width: 3rem;
+    height: 3rem;
+    margin: 0 auto 1rem;
+    color: #9ca3af;
+}
+
+/* Processing time badge */
+.processing-time {
+    font-size: 0.75rem;
+    color: #6b7280;
+    background: #f1f5f9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+}

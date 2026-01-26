@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Assistant - AI Security Analyst</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-slate-800 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    <div>
+                        <h1 class="text-xl font-bold">SOC Assistant</h1>
+                        <p class="text-sm text-slate-300">AI-Powered Security Log Analysis</p>
+                    </div>
+                </div>
+                <div class="text-sm text-slate-300">
+                    <span id="status" class="flex items-center">
+                        <span class="w-2 h-2 bg-emerald-400 rounded-full mr-2"></span>
+                        System Ready
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Input -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Log Input Card -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Analyze Security Logs</h2>
+                    
+                    <form id="analyzeForm" class="space-y-4">
+                        <!-- Log Type Selector -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Log Type</label>
+                            <select id="logType" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="auto">Auto-detect</option>
+                                <option value="auth">Auth Logs (SSH/sudo)</option>
+                                <option value="nginx">Nginx Access Logs</option>
+                                <option value="json">JSON Logs</option>
+                            </select>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Log File</label>
+                            <input type="file" id="fileInput" accept=".log,.txt,.json" 
+                                   class="w-full border border-gray-300 rounded-md px-3 py-2 text-sm file:mr-3 file:py-1 file:px-3 file:border-0 file:bg-emerald-50 file:text-emerald-700 file:rounded file:cursor-pointer">
+                        </div>
+
+                        <!-- Or Paste -->
+                        <div class="text-center text-sm text-gray-500">— or paste logs below —</div>
+
+                        <!-- Log Content Textarea -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Log Content</label>
+                            <textarea id="logContent" rows="12" 
+                                      placeholder="Paste log entries here..."
+                                      class="w-full border border-gray-300 rounded-md px-3 py-2 font-mono text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"></textarea>
+                        </div>
+
+                        <!-- Analyze Button -->
+                        <button type="submit" id="analyzeBtn"
+                                class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md transition-colors flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <span>Analyze Logs</span>
+                        </button>
+                    </form>
+
+                    <!-- Sample Data Buttons -->
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <p class="text-sm text-gray-500 mb-2">Load sample attack logs:</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="loadSample('brute_force')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded">
+                                SSH Brute Force
+                            </button>
+                            <button onclick="loadSample('web_scan')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded">
+                                Web Scanner
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Analysis Results -->
+                <div id="resultsCard" class="bg-white rounded-lg shadow-md p-6 hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-800">Analysis Results</h2>
+                        <span id="processingTime" class="text-sm text-gray-500"></span>
+                    </div>
+
+                    <!-- Incident Header -->
+                    <div id="incidentHeader" class="mb-6 p-4 rounded-lg border-2">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h3 id="incidentTitle" class="text-xl font-bold text-gray-900"></h3>
+                                <p id="incidentId" class="text-sm text-gray-500 mt-1"></p>
+                            </div>
+                            <span id="severityBadge" class="px-3 py-1 rounded-full text-sm font-medium"></span>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Description</h4>
+                        <p id="description" class="text-gray-700"></p>
+                    </div>
+
+                    <!-- MITRE ATT&CK -->
+                    <div id="mitreSection" class="mb-6">
+                        <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">MITRE ATT&CK Mapping</h4>
+                        <div id="mitreTechniques" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Evidence Summary -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Evidence Summary</h4>
+                        <div id="evidenceSummary" class="bg-gray-50 rounded-lg p-4 text-sm"></div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-semibold text-gray-600 uppercase tracking-wide mb-2">Recommended Actions</h4>
+                        <ul id="recommendations" class="space-y-2"></ul>
+                    </div>
+
+                    <!-- Confidence & False Positive -->
+                    <div class="flex gap-4 text-sm">
+                        <div class="flex items-center">
+                            <span class="text-gray-500 mr-2">Confidence:</span>
+                            <span id="confidence" class="font-medium"></span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-gray-500 mr-2">False Positive Risk:</span>
+                            <span id="fpLikelihood" class="font-medium"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="bg-white rounded-lg shadow-md p-12 hidden">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
+                        <p class="mt-4 text-gray-600">Analyzing logs...</p>
+                        <p class="text-sm text-gray-400 mt-1">Running detection rules and AI analysis</p>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorState" class="bg-white rounded-lg shadow-md p-6 hidden">
+                    <div class="text-center text-red-600">
+                        <svg class="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <h3 class="font-semibold text-lg">Analysis Failed</h3>
+                        <p id="errorMessage" class="mt-2 text-gray-600"></p>
+                    </div>
+                </div>
+
+                <!-- Recent Incidents -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-lg font-semibold text-gray-800 mb-4">Recent Incidents</h2>
+                    <div id="recentIncidents" class="space-y-3">
+                        {% if incidents %}
+                            {% for incident in incidents %}
+                            <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50 cursor-pointer" 
+                                 onclick="loadIncident('{{ incident.id }}')">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-900">{{ incident.title }}</span>
+                                        <p class="text-xs text-gray-500">{{ incident.id }} • {{ incident.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                                    </div>
+                                    <span class="px-2 py-0.5 rounded text-xs font-medium
+                                        {% if incident.severity == 'critical' %}bg-red-100 text-red-800
+                                        {% elif incident.severity == 'high' %}bg-orange-100 text-orange-800
+                                        {% elif incident.severity == 'medium' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-green-100 text-green-800{% endif %}">
+                                        {{ incident.severity }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-gray-500 text-sm text-center py-4">No incidents yet. Analyze some logs to get started.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Sample attack logs
+        const sampleLogs = {
+            brute_force: `Jan 15 03:22:15 server sshd[12345]: Failed password for admin from 192.168.1.100 port 54321 ssh2
+Jan 15 03:22:17 server sshd[12346]: Failed password for admin from 192.168.1.100 port 54322 ssh2
+Jan 15 03:22:19 server sshd[12347]: Failed password for root from 192.168.1.100 port 54323 ssh2
+Jan 15 03:22:21 server sshd[12348]: Failed password for admin from 192.168.1.100 port 54324 ssh2
+Jan 15 03:22:23 server sshd[12349]: Failed password for ubuntu from 192.168.1.100 port 54325 ssh2
+Jan 15 03:22:25 server sshd[12350]: Failed password for admin from 192.168.1.100 port 54326 ssh2
+Jan 15 03:22:27 server sshd[12351]: Failed password for root from 192.168.1.100 port 54327 ssh2
+Jan 15 03:22:29 server sshd[12352]: Failed password for admin from 192.168.1.100 port 54328 ssh2
+Jan 15 03:22:31 server sshd[12353]: Failed password for test from 192.168.1.100 port 54329 ssh2
+Jan 15 03:22:33 server sshd[12354]: Failed password for admin from 192.168.1.100 port 54330 ssh2
+Jan 15 03:22:35 server sshd[12355]: Failed password for admin from 192.168.1.100 port 54331 ssh2
+Jan 15 03:22:37 server sshd[12356]: Failed password for root from 192.168.1.100 port 54332 ssh2
+Jan 15 03:22:39 server sshd[12357]: Failed password for admin from 192.168.1.100 port 54333 ssh2
+Jan 15 03:22:41 server sshd[12358]: Failed password for admin from 192.168.1.100 port 54334 ssh2
+Jan 15 03:22:43 server sshd[12359]: Failed password for ubuntu from 192.168.1.100 port 54335 ssh2
+Jan 15 03:27:42 server sshd[12390]: Accepted password for admin from 192.168.1.100 port 54365 ssh2`,
+
+            web_scan: `192.168.1.50 - - [15/Jan/2024:04:15:22 +0000] "GET /../../etc/passwd HTTP/1.1" 400 0 "-" "Mozilla/5.0"
+192.168.1.50 - - [15/Jan/2024:04:15:23 +0000] "GET /admin HTTP/1.1" 404 0 "-" "sqlmap/1.4"
+192.168.1.50 - - [15/Jan/2024:04:15:24 +0000] "GET /wp-admin HTTP/1.1" 404 0 "-" "sqlmap/1.4"
+192.168.1.50 - - [15/Jan/2024:04:15:25 +0000] "GET /phpmyadmin HTTP/1.1" 404 0 "-" "sqlmap/1.4"
+192.168.1.50 - - [15/Jan/2024:04:15:26 +0000] "GET /.env HTTP/1.1" 403 0 "-" "sqlmap/1.4"
+192.168.1.50 - - [15/Jan/2024:04:15:27 +0000] "GET /.git/config HTTP/1.1" 403 0 "-" "sqlmap/1.4"
+192.168.1.50 - - [15/Jan/2024:04:15:28 +0000] "GET /config.php HTTP/1.1" 404 0 "-" "sqlmap/1.4"
+192.168.1.50 - - [15/Jan/2024:04:15:29 +0000] "GET /backup.sql HTTP/1.1" 404 0 "-" "sqlmap/1.4"
+192.168.1.50 - - [15/Jan/2024:04:15:30 +0000] "POST /login HTTP/1.1" 401 0 "-" "sqlmap/1.4"
+192.168.1.50 - - [15/Jan/2024:04:15:31 +0000] "GET /api/users HTTP/1.1" 401 0 "-" "sqlmap/1.4"`
+        };
+
+        function loadSample(type) {
+            document.getElementById('logContent').value = sampleLogs[type] || '';
+            document.getElementById('logType').value = type === 'brute_force' ? 'auth' : 'nginx';
+        }
+
+        // Handle file upload
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const text = await file.text();
+                document.getElementById('logContent').value = text;
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('analyzeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const logContent = document.getElementById('logContent').value;
+            const logType = document.getElementById('logType').value;
+            
+            if (!logContent.trim()) {
+                alert('Please enter or upload log content');
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('resultsCard').classList.add('hidden');
+            document.getElementById('errorState').classList.add('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+            
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ log_content: logContent, log_type: logType })
+                });
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Analysis failed');
+                }
+                
+                const data = await response.json();
+                displayResults(data);
+                
+            } catch (error) {
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('errorState').classList.remove('hidden');
+                document.getElementById('errorMessage').textContent = error.message;
+            }
+        });
+
+        function displayResults(data) {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('resultsCard').classList.remove('hidden');
+            
+            const incident = data.incident;
+            
+            // Update header
+            document.getElementById('incidentTitle').textContent = incident.title;
+            document.getElementById('incidentId').textContent = incident.id;
+            document.getElementById('processingTime').textContent = `Processed in ${data.processing_time_ms}ms`;
+            
+            // Severity badge
+            const severityBadge = document.getElementById('severityBadge');
+            severityBadge.textContent = incident.severity.toUpperCase();
+            severityBadge.className = 'px-3 py-1 rounded-full text-sm font-medium';
+            const severityClasses = {
+                critical: 'bg-red-100 text-red-800',
+                high: 'bg-orange-100 text-orange-800',
+                medium: 'bg-yellow-100 text-yellow-800',
+                low: 'bg-green-100 text-green-800'
+            };
+            severityBadge.classList.add(...(severityClasses[incident.severity] || 'bg-gray-100 text-gray-800').split(' '));
+            
+            // Header border color
+            const header = document.getElementById('incidentHeader');
+            header.className = 'mb-6 p-4 rounded-lg border-2';
+            const borderClasses = {
+                critical: 'border-red-200 bg-red-50',
+                high: 'border-orange-200 bg-orange-50',
+                medium: 'border-yellow-200 bg-yellow-50',
+                low: 'border-green-200 bg-green-50'
+            };
+            header.classList.add(...(borderClasses[incident.severity] || 'border-gray-200').split(' '));
+            
+            // Description
+            document.getElementById('description').textContent = incident.description;
+            
+            // MITRE ATT&CK
+            const mitreContainer = document.getElementById('mitreTechniques');
+            mitreContainer.innerHTML = '';
+            if (incident.mitre_attack && incident.mitre_attack.length > 0) {
+                document.getElementById('mitreSection').classList.remove('hidden');
+                incident.mitre_attack.forEach(technique => {
+                    const badge = document.createElement('a');
+                    badge.href = `https://attack.mitre.org/techniques/${technique.replace('.', '/')}/`;
+                    badge.target = '_blank';
+                    badge.className = 'inline-block bg-purple-100 text-purple-800 text-sm px-2 py-1 rounded hover:bg-purple-200';
+                    badge.textContent = technique;
+                    mitreContainer.appendChild(badge);
+                });
+            } else {
+                document.getElementById('mitreSection').classList.add('hidden');
+            }
+            
+            // Evidence Summary
+            const evidenceDiv = document.getElementById('evidenceSummary');
+            const evidence = incident.evidence_summary;
+            evidenceDiv.innerHTML = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-gray-500">Alerts:</span>
+                        <span class="font-medium ml-2">${evidence.total_alerts || 0}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Source IPs:</span>
+                        <span class="font-medium ml-2">${evidence.source_ip_count || 0}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Affected Users:</span>
+                        <span class="font-medium ml-2">${evidence.affected_user_count || 0}</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Duration:</span>
+                        <span class="font-medium ml-2">${evidence.time_range?.duration_minutes || 0} min</span>
+                    </div>
+                </div>
+                ${evidence.source_ips?.length > 0 ? `
+                <div class="mt-3 pt-3 border-t border-gray-200">
+                    <span class="text-gray-500">Source IPs:</span>
+                    <span class="font-mono text-sm ml-2">${evidence.source_ips.join(', ')}</span>
+                </div>` : ''}
+            `;
+            
+            // Recommendations
+            const recList = document.getElementById('recommendations');
+            recList.innerHTML = '';
+            if (incident.recommendations) {
+                incident.recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.className = 'flex items-start';
+                    li.innerHTML = `
+                        <svg class="w-5 h-5 text-emerald-500 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-gray-700">${rec}</span>
+                    `;
+                    recList.appendChild(li);
+                });
+            }
+            
+            // Confidence & FP
+            const llm = incident.llm_analysis;
+            if (llm) {
+                document.getElementById('confidence').textContent = llm.confidence || 'N/A';
+                document.getElementById('fpLikelihood').textContent = llm.false_positive_likelihood || 'N/A';
+            }
+        }
+
+        async function loadIncident(id) {
+            try {
+                const response = await fetch(`/api/incidents/${id}`);
+                if (response.ok) {
+                    const incident = await response.json();
+                    displayResults({ incident, processing_time_ms: 0 });
+                }
+            } catch (error) {
+                console.error('Failed to load incident:', error);
+            }
+        }
+    </script>
+</body>
+</html>
